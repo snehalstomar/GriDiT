@@ -4,11 +4,8 @@ torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 from torchvision.utils import save_image
 
-# attempt 1
-# from diffusion_sequential_interpolation_sampling import create_diffusion
+
 from diffusion import create_diffusion_seq_interpolation_sampling as create_diffusion
-# attempt 2
-# from diffusion_sequential_interpolation_sampling_attemp2 import create_diffusion
 from diffusers.models import AutoencoderKL
 from src.utils.download import find_model
 from src.models.models_sequential import DiT_models
@@ -66,20 +63,14 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 def sample_n_length_sequences(
     diffusion, model, vae, stage1_grids_path, args, target_dir, grid_size=16
 ):
-    # print("stage1_grids_path", stage1_grids_path)
-    # print(os.listdir(stage1_grids_path))
     latent_size = args.image_size // 8
     stage_1_grid_imgs = sorted(os.listdir(stage1_grids_path))
-    # print(stage_1_grid_imgs, type(stage_1_grid_imgs))
     stage_1_grid_imgs = stage_1_grid_imgs[1:]
-    # print(stage_1_grid_imgs, type(stage_1_grid_imgs))
-    # exit()
     working_grid_img_names = [
         (stage_1_grid_imgs[i], stage_1_grid_imgs[i + 1])
         for i in range(len(stage_1_grid_imgs) - 1)
     ]
     print(f"working_grid_img_name_chunks:{working_grid_img_names}")
-    # input()
     for idx, src_tgt_tuple in tqdm(enumerate(working_grid_img_names)):
         z_gt_src = None
         z_gt_tgt = None
@@ -95,7 +86,6 @@ def sample_n_length_sequences(
             print(
                 f'copied {stage1_grids_path + "/" + src_tgt_tuple[0]} to {target_dir+ "/"+ stage1_grids_path.split("/")[-1]+ "/"+ src_tgt_tuple[0]}.'
             )
-            # input()
         shutil.copy(
             stage1_grids_path + "/" + src_tgt_tuple[1],
             target_dir
@@ -185,7 +175,7 @@ def main(args):
     ckpt_path = args.ckpt or f"DiT-XL-2-{args.image_size}x{args.image_size}.pt"
     state_dict = find_model(ckpt_path)
     model.load_state_dict(state_dict)
-    model.eval()  # important!
+    model.eval()  
     diffusion = create_diffusion(str(args.num_sampling_steps))
     vae = AutoencoderKL.from_pretrained(f"stabilityai/sd-vae-ft-{args.vae}").to(device)
 

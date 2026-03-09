@@ -20,8 +20,7 @@
   [![arXiv](https://img.shields.io/badge/arXiv-blue?logo=arxiv&color=%23B31B1B)](https://arxiv.org/abs/2512.21276) 
   [![ProjectPage](https://img.shields.io/badge/Project_Page-GriDiT-blue)]()
   [![HuggingFace GriDiT](https://img.shields.io/badge/Hugging%20Face-GriDiT-yellow?logo=huggingface&logoColor=white)](https://huggingface.co/snehalstomar/GriDiT)
-  [![License](https://img.shields.io/badge/License-Apache--2.0-929292)](https://www.apache.org/licenses/LICENSE-2.0)
-
+  
  <div align="center"></div>
 </p>
 

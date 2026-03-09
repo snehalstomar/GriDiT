@@ -20,11 +20,8 @@ def get_sorted_filenames(main_dir: str) -> Dict[str, List[str]]:
     """
     sorted_filenames = {}
 
-    # Iterate through all directories and files in main_dir
     for dirpath, dirnames, filenames in os.walk(main_dir):
-        # Check if the current directory is a subsubdirectory (two levels deep)
         if dirpath.count(os.sep) == main_dir.count(os.sep) + 2:
-            # Sort the filenames alphabetically
             sorted_filenames[dirpath] = sorted(filenames)
 
     return sorted_filenames

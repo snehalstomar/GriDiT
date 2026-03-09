@@ -177,8 +177,6 @@ class DiT(nn.Module):
         learn_sigma=True,
     ):
         super().__init__()
-        # print(f"input size to model is {input_size}.")
-        # input()
         self.learn_sigma = learn_sigma
         self.in_channels = in_channels
         self.out_channels = in_channels * 2 if learn_sigma else in_channels
@@ -196,7 +194,6 @@ class DiT(nn.Module):
             bias=True,
         )
         self.t_embedder = TimestepEmbedder(hidden_size)
-        # self.y_embedder = LabelEmbedder(num_classes, hidden_size, class_dropout_prob)
         num_patches = self.x_embedder.num_patches
         # Will use fixed sin-cos embedding:
         self.pos_embed = nn.Parameter(
@@ -232,9 +229,6 @@ class DiT(nn.Module):
         w = self.x_embedder.proj.weight.data
         nn.init.xavier_uniform_(w.view([w.shape[0], -1]))
         nn.init.constant_(self.x_embedder.proj.bias, 0)
-
-        # Initialize label embedding table:
-        # nn.init.normal_(self.y_embedder.embedding_table.weight, std=0.02)
 
         # Initialize timestep embedding MLP:
         nn.init.normal_(self.t_embedder.mlp[0].weight, std=0.02)
@@ -273,21 +267,16 @@ class DiT(nn.Module):
         t: (N,) tensor of diffusion timesteps
         y: (N,) tensor of class labels
         """
-        # print("input_shape->", x_concat.shape)
-        # print("pos_embed_shape->", self.pos_embed.shape)
-        # print("embedded_x.shape->", self.x_embedder(x_concat).shape)
         x = (
             self.x_embedder(torch.cat((x, y), dim=1)) + self.pos_embed
         )  # (N, T, D), where T = H * W / patch_size ** 2
-        t = self.t_embedder(t)  # (N, D)
-        # y = self.y_embedder(y, self.training)    # (N, D)
-        c = t  # + y                                # (N, D)
+        t = self.t_embedder(t)  # (N, D)  
+        c = t 
         for block in self.blocks:
             x = block(x, c)  # (N, T, D)
         x = self.final_layer(x, c)  # (N, T, patch_size ** 2 * out_channels)
         x = self.unpatchify(x)  # (N, out_channels, H, W)
-        # print('x_concat.shape->',x_concat.shape)
-        # exit()
+
         return x
 
     def forward_with_cfg(self, x, t, y, cfg_scale):

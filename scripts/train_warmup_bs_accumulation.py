@@ -1,6 +1,4 @@
 import torch
-
-# the first flag below was False when we tested this script but True makes A100 training a lot faster:
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 import torch.distributed as dist
@@ -22,7 +20,6 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.optim.lr_scheduler import _LRScheduler
 
-# from models import DiT_models
 from src.models.models import DiT_models
 from diffusion import create_diffusion
 from diffusers.models import AutoencoderKL
@@ -238,9 +235,7 @@ def main(args):
         sampler.set_epoch(epoch)
         logger.info(f"Beginning epoch {epoch}...")
 
-        # modification for grad_accumulation
         for batch_idx, (x, y) in enumerate(loader):
-            # for x, y in loader:
             x = x.to(device)
             y = y.to(device)
             with torch.no_grad():
@@ -253,9 +248,6 @@ def main(args):
                 opt.zero_grad()
                 optim_zeroed_out = 1
 
-            # opt.zero_grad()
-            # modifications for fp16 training
-            # with autocast(device_type='cuda', dtype=torch.float16):
             with autocast(dtype=torch.float16):
                 loss_dict = diffusion.training_losses(model, x, t, model_kwargs)
                 loss = loss_dict["loss"].mean()
@@ -268,17 +260,14 @@ def main(args):
                 scaler.step(opt)
                 scaler.update()
                 optim_step = 1
-            # for accomodating warmup
             scheduler.step()
 
             update_ema(ema, model.module)
 
-            # Log loss values:
             running_loss += loss.item()
             log_steps += 1
             train_steps += 1
             if train_steps % args.log_every == 0:
-                # Measure training speed:
                 torch.cuda.synchronize()
                 end_time = time()
                 steps_per_sec = log_steps / (end_time - start_time)

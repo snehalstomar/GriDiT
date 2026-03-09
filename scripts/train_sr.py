@@ -1,6 +1,4 @@
 import torch
-
-# the first flag below was False when we tested this script but True makes A100 training a lot faster:
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 import torch.distributed as dist
@@ -19,7 +17,6 @@ import argparse
 import logging
 import os
 
-# from models_sr import DiT_models
 from src.models.models_sr import DiT_models
 from diffusion import create_diffusion
 from diffusers.models import AutoencoderKL

@@ -1,9 +1,7 @@
 import torch
-
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 from torchvision.utils import save_image
-# from diffusion_sequential_three_row import create_diffusion
 from diffusion import create_diffusion_seq_three_row as create_diffusion
 from diffusers.models import AutoencoderKL
 from src.utils.download import find_model
@@ -43,7 +41,6 @@ def center_crop_arr(pil_image, image_size):
 transform = transforms.Compose(
     [
         transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, 512)),
-        # transforms.RandomHorizontalFlip(),
         transforms.Resize((512, 512)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5], std=[0.5], inplace=True),
@@ -152,7 +149,7 @@ def main(args):
     ckpt_path = args.ckpt or f"DiT-XL-2-{args.image_size}x{args.image_size}.pt"
     state_dict = find_model(ckpt_path)
     model.load_state_dict(state_dict)
-    model.eval()  # important!
+    model.eval()  
     diffusion = create_diffusion(str(args.num_sampling_steps))
     print(type(diffusion), diffusion)
     input()
@@ -172,7 +169,6 @@ def main(args):
             model,
             vae,
             start_path,
-            # args.vidLength,
             ((args.vidLength - 8) // 12) + 1,
             args,
             target_dir,

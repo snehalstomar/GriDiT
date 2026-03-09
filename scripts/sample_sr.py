@@ -34,8 +34,6 @@ def center_crop_arr(pil_image, image_size):
     return Image.fromarray(arr[crop_y: crop_y + image_size, crop_x: crop_x + image_size])
 
 transform = transforms.Compose([
-                         # transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, 512)),
-                         # transforms.RandomHorizontalFlip(),
                          transforms.Resize((256, 256), antialias=True),
                          transforms.ToTensor(),
                          transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
