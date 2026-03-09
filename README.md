@@ -43,10 +43,10 @@ for sequences of arbitrary length while significantly reducing sampling time and
 ## Setup
 
 ```
-$ git clone <this repo>
-$ cd GriDiT/
-$ make setup
-$ conda activate GriDiT
+git clone https://github.com/snehalstomar/GriDiT.git
+cd GriDiT/
+make setup
+conda activate GriDiT
 ```
 
 ## Inference
