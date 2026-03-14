@@ -60,7 +60,7 @@ conda activate GriDiT
 make sample_long_sequences
 ```
 
-The sampled sequences shall then be found at `outputs/splitted_output`.
+The sampled sequences shall then be found at `OUTPUT_DIR/splitted_output`.
 
 ## Training
 
