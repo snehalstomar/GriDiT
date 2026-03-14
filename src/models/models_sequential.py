@@ -170,7 +170,9 @@ class DiT(nn.Module):
 
         self.x_embedder = PatchEmbed(input_size, patch_size, in_channels, hidden_size, bias=True)
         self.t_embedder = TimestepEmbedder(hidden_size)
+        # self.y_embedder = LabelEmbedder(num_classes, hidden_size, class_dropout_prob)
         num_patches = self.x_embedder.num_patches
+        # Will use fixed sin-cos embedding:
         self.pos_embed = nn.Parameter(torch.zeros(1, num_patches, hidden_size), requires_grad=False)
 
         self.blocks = nn.ModuleList([
@@ -190,6 +192,8 @@ class DiT(nn.Module):
         self.apply(_basic_init)
 
         # Initialize (and freeze) pos_embed by sin-cos embedding:
+        # pos_embed = get_3d_sincos_pos_embed(self.pos_embed.shape[-1], int(self.x_embedder.num_patches ** 0.5))
+        # self.pos_embed.data.copy_(torch.from_numpy(pos_embed).float().unsqueeze(0))
         pos_embed = get_3d_sincos_pos_embed(self.pos_embed.shape[-1], int((self.x_embedder.num_patches // self.video_depth) ** 0.5), self.video_depth)
         self.pos_embed.data.copy_(torch.from_numpy(pos_embed).float().unsqueeze(0))
 
@@ -197,6 +201,9 @@ class DiT(nn.Module):
         w = self.x_embedder.proj.weight.data
         nn.init.xavier_uniform_(w.view([w.shape[0], -1]))
         nn.init.constant_(self.x_embedder.proj.bias, 0)
+
+        # Initialize label embedding table:
+        # nn.init.normal_(self.y_embedder.embedding_table.weight, std=0.02)
 
         # Initialize timestep embedding MLP:
         nn.init.normal_(self.t_embedder.mlp[0].weight, std=0.02)
@@ -237,7 +244,8 @@ class DiT(nn.Module):
         """
         x = self.x_embedder(x) + self.pos_embed  # (N, T, D), where T = H * W / patch_size ** 2
         t = self.t_embedder(t)                   # (N, D)
-        c = t
+        # y = self.y_embedder(y, self.training)    # (N, D)
+        c = t #+ y
         counter = 0                                # (N, D)
         for block in self.blocks:
             x = block(x, c)    
@@ -330,6 +338,7 @@ def get_3d_sincos_pos_embed(embed_dim, grid_size, depth, cls_token=False, extra_
     return pos_embed
 
 def get_3d_sincos_pos_embed_from_grid(embed_dim, grid):
+    # assert embed_dim % 3 == 0
 
     # use half of dimensions to encode grid_h
     emb_d = get_1d_sincos_pos_embed_from_grid(embed_dim // 3 + embed_dim % 3, grid[0])  # (H*W, D/2)

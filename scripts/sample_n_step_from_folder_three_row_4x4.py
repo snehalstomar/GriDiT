@@ -1,7 +1,10 @@
 import torch
+
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 from torchvision.utils import save_image
+
+# from diffusion_sequential_three_row import create_diffusion
 from diffusion import create_diffusion_seq_three_row as create_diffusion
 from diffusers.models import AutoencoderKL
 from src.utils.download import find_model
@@ -17,6 +20,7 @@ import matplotlib.pyplot as plt
 from skimage import io, transform
 from tqdm import tqdm
 import shutil
+
 
 def center_crop_arr(pil_image, image_size):
 
@@ -41,6 +45,7 @@ def center_crop_arr(pil_image, image_size):
 transform = transforms.Compose(
     [
         transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, 512)),
+        # transforms.RandomHorizontalFlip(),
         transforms.Resize((512, 512)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5], std=[0.5], inplace=True),
@@ -87,7 +92,7 @@ def sample_n_length_sequences(
     prev_img_paths = []
     prev_img_paths.append(start_img_path)
     # num_samples = required_length // grid_size
-    num_samples = required_length 
+    num_samples = required_length
     for sample_idx in tqdm(range(num_samples)):
         img = transform(Image.open(prev_img_paths[-1])).to(device)
         img = img.unsqueeze(0)
@@ -149,10 +154,8 @@ def main(args):
     ckpt_path = args.ckpt or f"DiT-XL-2-{args.image_size}x{args.image_size}.pt"
     state_dict = find_model(ckpt_path)
     model.load_state_dict(state_dict)
-    model.eval()  
+    model.eval()  # important!
     diffusion = create_diffusion(str(args.num_sampling_steps))
-    print(type(diffusion), diffusion)
-    input()
     vae = AutoencoderKL.from_pretrained(f"stabilityai/sd-vae-ft-{args.vae}").to(device)
 
     start_img_dir_path = args.input_dir
@@ -169,6 +172,7 @@ def main(args):
             model,
             vae,
             start_path,
+            # args.vidLength,
             ((args.vidLength - 8) // 12) + 1,
             args,
             target_dir,

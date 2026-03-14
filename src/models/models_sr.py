@@ -230,6 +230,9 @@ class DiT(nn.Module):
         nn.init.xavier_uniform_(w.view([w.shape[0], -1]))
         nn.init.constant_(self.x_embedder.proj.bias, 0)
 
+        # Initialize label embedding table:
+        # nn.init.normal_(self.y_embedder.embedding_table.weight, std=0.02)
+
         # Initialize timestep embedding MLP:
         nn.init.normal_(self.t_embedder.mlp[0].weight, std=0.02)
         nn.init.normal_(self.t_embedder.mlp[2].weight, std=0.02)
@@ -267,16 +270,21 @@ class DiT(nn.Module):
         t: (N,) tensor of diffusion timesteps
         y: (N,) tensor of class labels
         """
+        # print("input_shape->", x_concat.shape)
+        # print("pos_embed_shape->", self.pos_embed.shape)
+        # print("embedded_x.shape->", self.x_embedder(x_concat).shape)
         x = (
             self.x_embedder(torch.cat((x, y), dim=1)) + self.pos_embed
         )  # (N, T, D), where T = H * W / patch_size ** 2
-        t = self.t_embedder(t)  # (N, D)  
-        c = t 
+        t = self.t_embedder(t)  # (N, D)
+        # y = self.y_embedder(y, self.training)    # (N, D)
+        c = t  # + y                                # (N, D)
         for block in self.blocks:
             x = block(x, c)  # (N, T, D)
         x = self.final_layer(x, c)  # (N, T, patch_size ** 2 * out_channels)
         x = self.unpatchify(x)  # (N, out_channels, H, W)
-
+        # print('x_concat.shape->',x_concat.shape)
+        # exit()
         return x
 
     def forward_with_cfg(self, x, t, y, cfg_scale):

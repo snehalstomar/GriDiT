@@ -4,8 +4,12 @@ torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 from torchvision.utils import save_image
 
-
+# attempt 1
+# from diffusion_sequential_interpolation_sampling import create_diffusion
 from diffusion import create_diffusion_seq_interpolation_sampling as create_diffusion
+
+# attempt 2
+# from diffusion_sequential_interpolation_sampling_attemp2 import create_diffusion
 from diffusers.models import AutoencoderKL
 from src.utils.download import find_model
 from src.models.models_sequential import DiT_models
@@ -151,7 +155,6 @@ def sample_n_length_sequences(
         print(
             f'saved interpolated grid img to {target_dir + "/" + stage1_grids_path.split("/")[-1]+ "/sample_"+ str((int(src_tgt_tuple[1].split(".")[0].split("_")[-1])*2)-1).zfill(4)+ ".png"}.'
         )
-        # input()
 
 
 def main(args):
@@ -175,7 +178,7 @@ def main(args):
     ckpt_path = args.ckpt or f"DiT-XL-2-{args.image_size}x{args.image_size}.pt"
     state_dict = find_model(ckpt_path)
     model.load_state_dict(state_dict)
-    model.eval()  
+    model.eval()  # important!
     diffusion = create_diffusion(str(args.num_sampling_steps))
     vae = AutoencoderKL.from_pretrained(f"stabilityai/sd-vae-ft-{args.vae}").to(device)
 

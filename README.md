@@ -52,8 +52,8 @@ conda activate GriDiT
 
 ### Arbitrary length image sequence synthesis using Stage 1:
 
-* Download and place our pretrained stage-1 model weights file from [Hugging Face](https://huggingface.co/snehalstomar/GriDiT/resolve/main/GriDiT_stage1_sky_ckpt.pt) at `ckpts/`.
-* Set all flags in `Makefile` per sampling requirements. The flag `NUM_SEQUENCES` denotes the desired number of sequences and `SAMPLING_FRAMES_LEN` denotes the desired length of each sequence.
+* Download and place your pretrained stage-1 model of choice from out Hugging Face [repository](https://huggingface.co/snehalstomar/GriDiT) at `ckpts/`.
+* Set all flags in `Makefile` per sampling requirements. The flag `NUM_SEQUENCES`, `SAMPLING_FRAMES_LEN`, `CKPT_PATH_INFER_STAGE_1`, and `OUTPUT_DIR` flags denote the desired number of sequences denotes, desired length of each sequence, path to the checkpoint file, and intended output path, respectively.
 * run:
 
 ```

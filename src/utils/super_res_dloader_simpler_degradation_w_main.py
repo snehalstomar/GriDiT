@@ -1,4 +1,6 @@
 import os
+
+# from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
@@ -114,9 +116,12 @@ class super_res_dset(Dataset):
             out_dim = 256
         else:
             raise Exception("Invalid Scale factor")
+        # self.root_dir = 'train_16_dset_next_set'
         self.transform_in = transforms.Compose(
             [
                 transforms.Resize((512, 512), antialias=True),
+                # transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, 256)),
+                # transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize(
                     mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True
@@ -124,23 +129,31 @@ class super_res_dset(Dataset):
             ]
         )
         self.transform_degraded = transforms.Compose(
-            [   
+            [
+                # transforms.Resize((256, 256)),
                 transforms.Resize((out_dim, out_dim)),
+                # transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, 256)),
+                # transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize(
                     mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True
                 ),
             ]
         )
-    
+        # self.lengths = []
+        # for dir_path in self.root_dirs:
+        #   self.lengths.append(count_files_in_directory(dir_path))
+
     def __len__(self):
         return len(os.listdir(self.root_dir))
-
+        # return sum(self.lengths)
 
     def __getitem__(self, idx):
         folder_of_choice = self.root_dir
+        # image = Image.open(folder_of_choice + '/' + 'image_'+ str(idx) + '.png').convert('RGB')
         image = Image.open(folder_of_choice + "/" + str(idx) + ".png").convert("RGB")
         degraded_img = process_image_resize_noise_blur(
+            # folder_of_choice + "/" + "image_" + str(idx) + ".png",
             folder_of_choice + "/" + str(idx) + ".png",
             sr_factor=self.sr_factor,
             erosion_iterations=3,
@@ -151,4 +164,6 @@ class super_res_dset(Dataset):
         degraded_img_PIL = Image.fromarray(degraded_img)
         img_tensor = self.transform_in(image)
         degraded_img_tensor = self.transform_degraded(degraded_img_PIL)
+        # image.save('dloader_img_in.png')
+        # degraded_img_PIL.save('dloader_img_out.png')
         return img_tensor, degraded_img_tensor

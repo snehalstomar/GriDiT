@@ -6,21 +6,22 @@ setup:
 #========================================Stage-1-Inference========================================
 NUM_NODES ?= 1
 NUM_GPUS ?= 1
-AVAILABLE_GPUS ?= 3
+AVAILABLE_GPUS ?= 4
 IMG_SIZE ?= 512
-CKPT_PATH_INFER_STAGE_1 ?= ckpts/stage1_sky_ckpt.pt # path_to_stage 1 ckpt
+CKPT_PATH_INFER_STAGE_1 ?= ckpts/#Path to your chosen checkpoint file
 NUM_SEQUENCES ?= 2 #Required number of synthetic sequences  
 RANDOM_SEED ?= 45
 NUM_SAMPLING_STEPS ?= 250
 GRID_SZ_K ?= 4
 SAMPLING_FRAMES_LEN ?= 64 #Required length of each synthetic sequences 
 VID_FPS ?= 4
+OUTPUT_DIR ?= outputs/ #Output direcectory of choice
 
 sample_long_sequences:
-	CUDA_VISIBLE_DEVICES=$(AVAILABLE_GPUS) python -m scripts.sample_n_save_different --model DiT-XL/2 --image-size $(IMG_SIZE) --ckpt $(CKPT_PATH_INFER_STAGE_1) --target_dir outputs/starting_grid_samples --nsamples $(NUM_SEQUENCES) --seed $(RANDOM_SEED) --num-sampling-steps $(NUM_SAMPLING_STEPS)
-	CUDA_VISIBLE_DEVICES=$(AVAILABLE_GPUS) python -m scripts.sample_n_step_from_folder_three_row_4x4 --model DiT-XL/2 --image-size $(IMG_SIZE) --ckpt $(CKPT_PATH_INFER_STAGE_1)  --input-dir outputs/starting_grid_samples --target-dir outputs/stage1_longer_sampling --vidLength $(SAMPLING_FRAMES_LEN) --gridSz $(GRID_SZ_K) --num-sampling-steps $(NUM_SAMPLING_STEPS)
-	CUDA_VISIBLE_DEVICES=$(AVAILABLE_GPUS) python -m scripts.sample_n_step_from_folder_three_row_4x4_stage2 --model DiT-XL/2 --image-size $(IMG_SIZE) --ckpt $(CKPT_PATH_INFER_STAGE_1) --input-dir outputs/stage1_longer_sampling --target-dir outputs/stage2_longer_sampling --vidLength $(SAMPLING_FRAMES_LEN) --gridSz $(GRID_SZ_K) --num-sampling-steps $(NUM_SAMPLING_STEPS)
-	python -m src.utils.grid_splitter_vid_maker_stage2_att3 --inputDir outputs/stage2_longer_sampling --targetDir outputs/splitted_output --fps $(VID_FPS) --condType three
+	CUDA_VISIBLE_DEVICES=$(AVAILABLE_GPUS) python -m scripts.sample_n_save_different --model DiT-XL/2 --image-size $(IMG_SIZE) --ckpt $(CKPT_PATH_INFER_STAGE_1) --target_dir $(OUTPUT_DIR)/starting_grid_samples --nsamples $(NUM_SEQUENCES) --seed $(RANDOM_SEED) --num-sampling-steps $(NUM_SAMPLING_STEPS)
+	CUDA_VISIBLE_DEVICES=$(AVAILABLE_GPUS) python -m scripts.sample_n_step_from_folder_three_row_4x4 --model DiT-XL/2 --image-size $(IMG_SIZE) --ckpt $(CKPT_PATH_INFER_STAGE_1)  --input-dir $(OUTPUT_DIR)/starting_grid_samples --target-dir $(OUTPUT_DIR)/stage1_longer_sampling --vidLength $(SAMPLING_FRAMES_LEN) --gridSz $(GRID_SZ_K) --num-sampling-steps $(NUM_SAMPLING_STEPS)
+	CUDA_VISIBLE_DEVICES=$(AVAILABLE_GPUS) python -m scripts.sample_n_step_from_folder_three_row_4x4_stage2 --model DiT-XL/2 --image-size $(IMG_SIZE) --ckpt $(CKPT_PATH_INFER_STAGE_1) --input-dir $(OUTPUT_DIR)/stage1_longer_sampling --target-dir $(OUTPUT_DIR)/stage2_longer_sampling --vidLength $(SAMPLING_FRAMES_LEN) --gridSz $(GRID_SZ_K) --num-sampling-steps $(NUM_SAMPLING_STEPS)
+	python -m src.utils.grid_splitter_vid_maker_stage2_att3 --inputDir $(OUTPUT_DIR)/stage2_longer_sampling --targetDir $(OUTPUT_DIR)/splitted_output --fps $(VID_FPS) --condType three
 #===================================================================================================
 
 #===========Training============================================================
