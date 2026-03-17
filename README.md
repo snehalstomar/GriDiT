@@ -18,7 +18,7 @@
   <h3 align="center">
 
   [![arXiv](https://img.shields.io/badge/arXiv-blue?logo=arxiv&color=%23B31B1B)](https://arxiv.org/abs/2512.21276) 
-  [![ProjectPage](https://img.shields.io/badge/Project_Page-GriDiT-blue)]()
+  [![ProjectPage](https://img.shields.io/badge/Project_Page-GriDiT-blue)](https://snehalstomar.github.io/projects/gridit_project/index.html)
   [![HuggingFace GriDiT](https://img.shields.io/badge/Hugging%20Face-GriDiT-yellow?logo=huggingface&logoColor=white)](https://huggingface.co/snehalstomar/GriDiT)
   
  <div align="center"></div>

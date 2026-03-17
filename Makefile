@@ -10,10 +10,10 @@ AVAILABLE_GPUS ?= 4
 IMG_SIZE ?= 512
 CKPT_PATH_INFER_STAGE_1 ?= ckpts/#Path to your chosen checkpoint file
 NUM_SEQUENCES ?= 2 #Required number of synthetic sequences  
-RANDOM_SEED ?= 45
+RANDOM_SEED ?= 45	
 NUM_SAMPLING_STEPS ?= 250
 GRID_SZ_K ?= 4
-SAMPLING_FRAMES_LEN ?= 64 #Required length of each synthetic sequences 
+SAMPLING_FRAMES_LEN ?= 64 #Required length of each synthetic sequence 
 VID_FPS ?= 4
 OUTPUT_DIR ?= outputs/ #Output direcectory of choice
 
