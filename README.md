@@ -89,13 +89,14 @@ This repository borrows significantly from, and builds upon the original DiT [re
 Please cite our work as:
 
 ```
-@misc{tomar2025griditfactorizedgridbaseddiffusion,
-      title={GriDiT: Factorized Grid-Based Diffusion for Efficient Long Image Sequence Generation}, 
-      author={Snehal Singh Tomar and Alexandros Graikos and Arjun Krishna and Dimitris Samaras and Klaus Mueller},
-      year={2025},
-      eprint={2512.21276},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2512.21276}, 
+@article{
+tomar2026gridit,
+title={GriDiT: Factorized Grid-Based Diffusion for Efficient Long Image Sequence Generation},
+author={Snehal Singh Tomar and Alexandros Graikos and Arjun Krishna and Dimitris Samaras and Klaus Mueller},
+journal={Transactions on Machine Learning Research},
+issn={2835-8856},
+year={2026},
+url={https://openreview.net/forum?id=QLD47Ou5lp},
+note={}
 }
 ```
